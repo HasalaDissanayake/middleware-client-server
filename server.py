@@ -4,11 +4,11 @@ import sys
 
 PORT = 5000
 HOST = socket.gethostbyname(socket.gethostname())
-ADDR = (HOST, PORT)
 
 
 def server_start(port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ADDR = (HOST, port)
     server_socket.bind(ADDR)
     print("[STARTING] server is starting...")
     server_socket.listen()
@@ -26,12 +26,17 @@ def handle_client(conn, address):
 
     while True:
         message = conn.recv(1024).decode()
-        if message == "terminate":
-            conn.send("[SESSION {address} TERMINATED]".encode())
+        if not message:
             break
-        print("[FROM {address}]: " + message)
-        reply = input("[FROM SERVER]: ")    
+        print(f"[FROM {address}]: " + message)
+
+        reply = input("[FROM SERVER]: ")
+        
+        while not reply.strip():
+            reply = input("[FROM SERVER]: ")
+
         conn.send(reply.encode())
+  
     
     conn.close()
 
@@ -44,7 +49,7 @@ if __name__ == '__main__':
 
     input_port = int(sys.argv[1])
 
-    if(input_port != 5000):
+    if(input_port != PORT):
         print("Invalid Port Given")
         sys.exit(0)
 
