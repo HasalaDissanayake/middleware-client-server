@@ -22,9 +22,19 @@ def server_start(port):
 
 
 def handle_client(conn, address):
-    print(f"[NEW CONNECTION] {address}")
+    print(f"[NEW CONNECTION] {address} connected..")
 
+    while True:
+        message = conn.recv(1024).decode()
+        if message == "terminate":
+            conn.send("[SESSION {address} TERMINATED]".encode())
+            break
+        print("[FROM {address}]: " + message)
+        reply = input("[FROM SERVER]: ")    
+        conn.send(reply.encode())
     
+    conn.close()
+
 
 
 if __name__ == '__main__':
